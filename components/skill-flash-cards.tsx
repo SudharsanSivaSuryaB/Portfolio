@@ -3,11 +3,12 @@
 import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ChevronLeft, ChevronRight, Zap, Brain, Code2, Database, Briefcase, BarChart3 } from "lucide-react"
+import { ChevronLeft, ChevronRight, Zap, Brain, Code2, Database, Briefcase, BarChart3, Layers, Lightbulb } from "lucide-react"
 
 interface FlashCard {
   id: string
   title: string
+  count: string
   icon: React.ComponentType<{ className?: string }>
   color: string
   skills: string[]
@@ -18,89 +19,101 @@ const flashCards: FlashCard[] = [
   {
     id: "full-stack",
     title: "Full Stack Development",
+    count: "8 Technologies",
     icon: Code2,
     color: "from-blue-500/20 to-blue-600/20",
-    description: "Complete end-to-end application development",
+    description: "End-to-end application architecture and development",
     skills: ["React", "TypeScript", "Node.js", "Golang", "PostgreSQL", "Next.js", "REST APIs", "WebSocket"],
   },
   {
     id: "data-analytics",
     title: "Data Analytics",
+    count: "6 Technologies",
     icon: BarChart3,
     color: "from-emerald-500/20 to-emerald-600/20",
-    description: "Data-driven insights and visualization",
-    skills: ["Python", "Pandas", "Power BI", "Data Visualization", "SQL", "Statistical Analysis", "NumPy", "Matplotlib"],
+    description: "Data-driven insights, visualization & statistical analysis",
+    skills: ["Python", "Pandas", "Power BI", "SQL", "NumPy", "Statistical Analysis"],
   },
   {
     id: "ai-ml",
     title: "AI & Machine Learning",
+    count: "6 Technologies",
     icon: Brain,
     color: "from-purple-500/20 to-purple-600/20",
-    description: "Intelligent systems and predictive models",
-    skills: ["Machine Learning", "LSTM", "Python", "Scikit-learn", "NLP", "AI Agents", "Relevance AI", "Deep Learning"],
+    description: "Intelligent systems, predictive models & neural networks",
+    skills: ["Machine Learning", "LSTM", "Python", "Scikit-learn", "NLP", "Deep Learning"],
   },
   {
     id: "backend",
     title: "Backend Engineering",
+    count: "6 Technologies",
     icon: Database,
     color: "from-orange-500/20 to-orange-600/20",
-    description: "Scalable and high-performance systems",
-    skills: ["Golang", "Node.js", "Microservices", "API Design", "Database Optimization", "Cloud Services", "Authentication", "AWS"],
+    description: "Scalable architecture and high-performance systems",
+    skills: ["Golang", "Node.js", "Microservices", "API Design", "PostgreSQL", "Real-time Systems"],
   },
   {
     id: "frontend",
     title: "Frontend Development",
+    count: "6 Technologies",
     icon: Zap,
     color: "from-cyan-500/20 to-cyan-600/20",
-    description: "Responsive and interactive user interfaces",
-    skills: ["React", "TypeScript", "Tailwind CSS", "HTML/CSS", "JavaScript", "Responsive Design", "UI/UX", "Performance Optimization"],
+    description: "Responsive design and interactive user experiences",
+    skills: ["React", "TypeScript", "Tailwind CSS", "JavaScript", "HTML/CSS", "Responsive Design"],
   },
   {
     id: "professional",
     title: "Professional Skills",
+    count: "7 Competencies",
     icon: Briefcase,
     color: "from-pink-500/20 to-pink-600/20",
-    description: "Core competencies for team success",
-    skills: ["Problem Solving", "Team Leadership", "Communication", "Project Management", "Adaptability", "Time Management", "Collaboration", "ABAP"],
+    description: "Core competencies essential for engineering excellence",
+    skills: ["Problem Solving", "Team Leadership", "Communication", "Project Management", "Adaptability", "ABAP", "Time Management"],
   },
 ]
 
 const colorMap = {
   "full-stack": {
-    border: "border-blue-500/40",
+    border: "border-blue-500/50",
     text: "text-blue-500",
-    badge: "bg-blue-500/20 hover:bg-blue-500/30",
-    bg: "from-blue-500/20 via-blue-500/10 to-transparent",
+    badge: "bg-blue-500/25 hover:bg-blue-500/40 border-blue-500/40 hover:border-blue-500/60",
+    bg: "from-blue-500/25 via-blue-500/15 to-transparent",
+    icon: "bg-blue-500/30 group-hover:bg-blue-500",
   },
   "data-analytics": {
-    border: "border-emerald-500/40",
+    border: "border-emerald-500/50",
     text: "text-emerald-500",
-    badge: "bg-emerald-500/20 hover:bg-emerald-500/30",
-    bg: "from-emerald-500/20 via-emerald-500/10 to-transparent",
+    badge: "bg-emerald-500/25 hover:bg-emerald-500/40 border-emerald-500/40 hover:border-emerald-500/60",
+    bg: "from-emerald-500/25 via-emerald-500/15 to-transparent",
+    icon: "bg-emerald-500/30 group-hover:bg-emerald-500",
   },
   "ai-ml": {
-    border: "border-purple-500/40",
+    border: "border-purple-500/50",
     text: "text-purple-500",
-    badge: "bg-purple-500/20 hover:bg-purple-500/30",
-    bg: "from-purple-500/20 via-purple-500/10 to-transparent",
+    badge: "bg-purple-500/25 hover:bg-purple-500/40 border-purple-500/40 hover:border-purple-500/60",
+    bg: "from-purple-500/25 via-purple-500/15 to-transparent",
+    icon: "bg-purple-500/30 group-hover:bg-purple-500",
   },
   "backend": {
-    border: "border-orange-500/40",
+    border: "border-orange-500/50",
     text: "text-orange-500",
-    badge: "bg-orange-500/20 hover:bg-orange-500/30",
-    bg: "from-orange-500/20 via-orange-500/10 to-transparent",
+    badge: "bg-orange-500/25 hover:bg-orange-500/40 border-orange-500/40 hover:border-orange-500/60",
+    bg: "from-orange-500/25 via-orange-500/15 to-transparent",
+    icon: "bg-orange-500/30 group-hover:bg-orange-500",
   },
   "frontend": {
-    border: "border-cyan-500/40",
+    border: "border-cyan-500/50",
     text: "text-cyan-500",
-    badge: "bg-cyan-500/20 hover:bg-cyan-500/30",
-    bg: "from-cyan-500/20 via-cyan-500/10 to-transparent",
+    badge: "bg-cyan-500/25 hover:bg-cyan-500/40 border-cyan-500/40 hover:border-cyan-500/60",
+    bg: "from-cyan-500/25 via-cyan-500/15 to-transparent",
+    icon: "bg-cyan-500/30 group-hover:bg-cyan-500",
   },
   "professional": {
-    border: "border-pink-500/40",
+    border: "border-pink-500/50",
     text: "text-pink-500",
-    badge: "bg-pink-500/20 hover:bg-pink-500/30",
-    bg: "from-pink-500/20 via-pink-500/10 to-transparent",
+    badge: "bg-pink-500/25 hover:bg-pink-500/40 border-pink-500/40 hover:border-pink-500/60",
+    bg: "from-pink-500/25 via-pink-500/15 to-transparent",
+    icon: "bg-pink-500/30 group-hover:bg-pink-500",
   },
 }
 
@@ -124,37 +137,41 @@ export function SkillFlashCards() {
       {/* Flash Card */}
       <div className="relative">
         <Card
-          className={`relative overflow-hidden border-2 ${colors.border} transition-all duration-500 group bg-gradient-to-br ${colors.bg} backdrop-blur-sm min-h-80 flex flex-col justify-between`}
+          className={`relative overflow-hidden border ${colors.border} transition-all duration-500 group bg-gradient-to-br ${colors.bg} backdrop-blur-xl min-h-96 flex flex-col justify-between shadow-lg hover:shadow-2xl hover:-translate-y-1`}
         >
-          {/* Animated background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-transparent to-accent/0 group-hover:from-primary/5 group-hover:via-primary/2 group-hover:to-accent/5 transition-all duration-300" />
+          {/* Animated background gradient with premium glow */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-transparent to-accent/0 group-hover:from-primary/10 group-hover:via-primary/5 group-hover:to-accent/10 transition-all duration-300" />
 
-          <CardContent className="relative z-10 space-y-6 flex flex-col justify-between h-full pt-8 pb-8">
-            <div className="space-y-4">
-              {/* Icon and Title */}
-              <div className="flex items-start justify-between">
-                <div className="space-y-3">
-                  <div className={`p-3 rounded-lg bg-gradient-to-br ${currentCard.color} w-fit`}>
-                    <Icon className={`h-8 w-8 ${colors.text}`} />
-                  </div>
-                  <h3 className="text-4xl font-bold tracking-tight">{currentCard.title}</h3>
+          {/* Premium shine effect */}
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:via-white/40 transition-all duration-300" />
+
+          <CardContent className="relative z-10 space-y-8 flex flex-col justify-between h-full pt-10 pb-10 px-10">
+            <div className="space-y-6">
+              {/* Icon and Title Section with Perfect Alignment */}
+              <div className="space-y-4">
+                <div className={`p-4 rounded-xl bg-gradient-to-br ${currentCard.color} w-fit group-hover:scale-110 group-hover:shadow-lg transition-all duration-300`}>
+                  <Icon className={`h-9 w-9 ${colors.text} group-hover:text-white transition-colors`} />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-5xl font-black tracking-tight leading-tight">{currentCard.title}</h3>
+                  <p className={`text-sm font-bold ${colors.text} uppercase tracking-widest`}>{currentCard.count}</p>
                 </div>
               </div>
 
               {/* Description */}
-              <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
+              <p className="text-base text-muted-foreground leading-relaxed max-w-2xl font-medium group-hover:text-foreground transition-colors">
                 {currentCard.description}
               </p>
             </div>
 
             {/* Skills */}
-            <div className="space-y-3">
-              <p className="text-xs font-black uppercase tracking-[0.15em] text-foreground/60">Core Skills</p>
-              <div className="flex flex-wrap gap-2">
+            <div className="space-y-4">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-foreground/50 group-hover:text-foreground/70 transition-colors">Featured Technologies</p>
+              <div className="flex flex-wrap gap-3">
                 {currentCard.skills.map((skill, index) => (
                   <Badge
                     key={index}
-                    className={`${colors.badge} border border-current/20 text-foreground font-medium cursor-default transition-all`}
+                    className={`${colors.badge} border text-foreground font-semibold cursor-default transition-all duration-300 hover:scale-105 hover:shadow-md`}
                     variant="outline"
                   >
                     {skill}
@@ -165,52 +182,53 @@ export function SkillFlashCards() {
           </CardContent>
         </Card>
 
-        {/* Card Counter */}
-        <div className="absolute top-4 right-4 z-20">
-          <Badge variant="secondary" className="font-mono text-sm">
+        {/* Card Counter with Enhanced Styling */}
+        <div className="absolute top-6 right-6 z-20">
+          <Badge className="font-mono text-xs font-bold px-3 py-1.5 bg-gradient-to-r from-primary/30 to-accent/30 border border-primary/50 hover:border-primary/80 transition-all">
             {currentIndex + 1} / {flashCards.length}
           </Badge>
         </div>
       </div>
 
-      {/* Navigation Controls */}
-      <div className="flex items-center justify-between gap-4">
+      {/* Navigation Controls with Enhanced Design */}
+      <div className="flex items-center justify-between gap-4 px-2">
         <button
           onClick={handlePrevious}
-          className="p-3 rounded-lg border border-primary/30 hover:border-primary/60 hover:bg-primary/10 transition-all duration-300 group/btn"
+          className="p-3 rounded-lg border border-primary/40 hover:border-primary/80 hover:bg-gradient-to-br hover:from-primary/20 hover:to-accent/20 transition-all duration-300 group/btn shadow-md hover:shadow-lg hover:-translate-x-1"
           aria-label="Previous card"
         >
-          <ChevronLeft className="h-5 w-5 group-hover/btn:text-primary transition-colors" />
+          <ChevronLeft className="h-5 w-5 text-primary/60 group-hover/btn:text-primary group-hover/btn:scale-110 transition-all" />
         </button>
 
-        {/* Dots Indicator */}
-        <div className="flex gap-2 justify-center flex-1">
+        {/* Dots Indicator with Enhanced Styling */}
+        <div className="flex gap-3 justify-center flex-1">
           {flashCards.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className={`transition-all duration-300 rounded-full ${
+              className={`transition-all duration-500 rounded-full ${
                 index === currentIndex
-                  ? "w-8 h-2 bg-primary"
-                  : "w-2 h-2 bg-primary/30 hover:bg-primary/60"
+                  ? "w-10 h-2.5 bg-gradient-to-r from-primary to-accent shadow-lg shadow-primary/50"
+                  : "w-2.5 h-2.5 bg-primary/20 hover:bg-primary/50 hover:shadow-md"
               }`}
               aria-label={`Go to card ${index + 1}`}
+              title={`${flashCards[index].title}`}
             />
           ))}
         </div>
 
         <button
           onClick={handleNext}
-          className="p-3 rounded-lg border border-primary/30 hover:border-primary/60 hover:bg-primary/10 transition-all duration-300 group/btn"
+          className="p-3 rounded-lg border border-primary/40 hover:border-primary/80 hover:bg-gradient-to-br hover:from-primary/20 hover:to-accent/20 transition-all duration-300 group/btn shadow-md hover:shadow-lg hover:translate-x-1"
           aria-label="Next card"
         >
-          <ChevronRight className="h-5 w-5 group-hover/btn:text-primary transition-colors" />
+          <ChevronRight className="h-5 w-5 text-primary/60 group-hover/btn:text-primary group-hover/btn:scale-110 transition-all" />
         </button>
       </div>
 
-      {/* Keyboard Hint */}
-      <p className="text-xs text-center text-muted-foreground">
-        Use arrow buttons or click dots to explore different skill categories
+      {/* Enhanced Keyboard Hint */}
+      <p className="text-xs text-center text-muted-foreground hover:text-foreground transition-colors">
+        <span className="font-semibold text-primary">Navigate</span> using arrow buttons • <span className="font-semibold text-primary">Hover</span> over dots to preview
       </p>
     </div>
   )
