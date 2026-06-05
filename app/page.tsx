@@ -6,6 +6,8 @@ import { Projects } from "@/components/projects"
 import { Skills } from "@/components/skills"
 import { ResumeDownload } from "@/components/resume-download"
 import { Certifications } from "@/components/certifications"
+import { Testimonials } from "@/components/testimonials"
+import { StatsSection } from "@/components/stats-section"
 import { Contact } from "@/components/contact"
 import { Footer } from "@/components/footer"
 import { PortfolioTour } from "@/components/portfolio-tour"
@@ -19,6 +21,8 @@ export default function Portfolio() {
         <About />
         <Experience />
         <Projects />
+        <StatsSection />
+        <Testimonials />
         <Skills />
         <ResumeDownload />
         <Certifications />

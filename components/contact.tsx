@@ -47,32 +47,32 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="py-24 px-4 sm:px-6 lg:px-8" ref={ref}>
-      <div className="max-w-5xl mx-auto">
+    <section id="contact" className="py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-background via-background/95 to-primary/5" ref={ref}>
+      {/* Premium background elements */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-primary/8 via-transparent to-accent/8" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-primary/15 to-transparent rounded-full blur-3xl -z-10" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-accent/15 to-transparent rounded-full blur-3xl -z-10" />
+
+      <div className="max-w-6xl mx-auto">
         <div
           className={`space-y-12 transition-all duration-700 ${
             isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="flex-1 h-px bg-border" />
-              <span className="text-primary font-mono text-xl">06.</span>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Get In Touch</h2>
-              <div className="flex-1 h-px bg-border" />
-            </div>
-            <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-              I'm always open to discussing new opportunities, collaborations, or just having a chat about technology.
-              Feel free to reach out!
+          <div className="text-center space-y-4 mb-16">
+            <span className="text-primary font-mono text-sm font-black uppercase tracking-[0.2em]">Let's Connect</span>
+            <h2 className="text-6xl sm:text-7xl font-black tracking-tighter">Get In Touch</h2>
+            <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl mx-auto">
+              I&apos;m always interested in hearing about new projects and opportunities. Whether it&apos;s for a collaboration, consultation, or just a technical discussion—let&apos;s connect and create something impactful together.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
             {/* Contact Info */}
-            <Card className="border-2 hover:border-primary/50 transition-all duration-300">
+            <Card className="border border-primary/20 hover:border-primary/60 transition-all duration-500 hover:shadow-xl hover:-translate-y-1 bg-gradient-to-br from-card to-card/80 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-2xl">Contact Information</CardTitle>
-                <CardDescription>Reach out through any of these channels</CardDescription>
+                <CardTitle className="text-3xl font-bold">Contact Information</CardTitle>
+                <CardDescription className="text-base">Choose your preferred way to reach out</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start gap-4 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
@@ -123,10 +123,10 @@ export function Contact() {
             </Card>
 
             {/* Contact Form */}
-            <Card className="border-2 hover:border-primary/50 transition-all duration-300">
+            <Card className="border border-primary/20 hover:border-primary/60 transition-all duration-500 hover:shadow-xl hover:-translate-y-1 bg-gradient-to-br from-card to-card/80 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-2xl">Send a Message</CardTitle>
-                <CardDescription>Fill out the form and I'll get back to you soon</CardDescription>
+                <CardTitle className="text-3xl font-bold">Send a Message</CardTitle>
+                <CardDescription className="text-base">I'll respond within 24 hours</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -169,15 +169,15 @@ export function Contact() {
                     </div>
                   )}
 
-                  <Button type="submit" className="w-full gap-2" disabled={isSubmitting}>
+                  <Button type="submit" className="w-full gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all text-white font-semibold" disabled={isSubmitting}>
                     {isSubmitting ? (
                       <>
                         <span className="animate-spin">⏳</span>
-                        Sending...
+                        Sending Message...
                       </>
                     ) : (
                       <>
-                        <Send className="h-4 w-4" />
+                        <Send className="h-5 w-5" />
                         Send Message
                       </>
                     )}

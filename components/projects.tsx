@@ -2,8 +2,9 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { useInView } from "@/hooks/use-in-view"
-import { useRef } from "react"
+import { useRef, useState, useMemo } from "react"
 import { Folder, ExternalLink } from "lucide-react"
 
 const projects = [
@@ -117,77 +118,156 @@ const projects = [
 export function Projects() {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref)
+  const [selectedFilter, setSelectedFilter] = useState<string | null>(null)
+
+  // Extract all unique technologies
+  const allTechs = useMemo(() => {
+    const techs = new Set<string>()
+    projects.forEach((project) => {
+      project.technologies.forEach((tech) => techs.add(tech))
+    })
+    return Array.from(techs).sort()
+  }, [])
+
+  // Filter projects based on selected technology
+  const filteredProjects = useMemo(() => {
+    if (!selectedFilter) return projects
+    return projects.filter((project) => project.technologies.includes(selectedFilter))
+  }, [selectedFilter])
 
   return (
-    <section id="projects" className="py-24 px-4 sm:px-6 lg:px-8 bg-muted/30" ref={ref}>
-      <div className="max-w-5xl mx-auto">
+    <section id="projects" className="py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-background via-background/95 to-background" ref={ref}>
+      {/* Premium background elements */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-primary/8 via-transparent to-accent/5" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-primary/15 to-transparent rounded-full blur-3xl -z-10" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-accent/15 to-transparent rounded-full blur-3xl -z-10" />
+
+      <div className="max-w-6xl mx-auto">
         <div
           className={`space-y-12 transition-all duration-700 ${
             isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <div>
-            <div className="flex items-center gap-4 mb-6">
-              <span className="text-primary font-mono text-xl">03.</span>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Things I've Built</h2>
-              <div className="flex-1 h-px bg-border" />
+          <div className="space-y-4 mb-12">
+            <div className="flex items-center gap-4">
+              <span className="text-primary font-mono text-2xl font-black">03.</span>
+              <h2 className="text-5xl sm:text-6xl font-bold tracking-tighter">Featured Projects</h2>
+              <div className="hidden md:flex flex-1 h-1 bg-gradient-to-r from-primary via-accent to-transparent rounded-full" />
+            </div>
+            <p className="text-muted-foreground text-lg max-w-3xl leading-relaxed">
+              A curated collection of projects showcasing expertise in full-stack development, generative AI integration, and scalable enterprise systems. Each project represents real-world solutions with measurable impact.
+            </p>
+          </div>
+
+          {/* Advanced Technology Filter Buttons */}
+          <div className="space-y-5 mb-12">
+            <p className="text-xs font-black text-primary uppercase tracking-[0.2em]">Filter by Technology Stack</p>
+            <div className="flex flex-wrap gap-3">
+              <Button
+                onClick={() => setSelectedFilter(null)}
+                variant={selectedFilter === null ? "default" : "outline"}
+                size="sm"
+                className={`transition-all duration-300 ${
+                  selectedFilter === null 
+                    ? "bg-gradient-to-r from-primary to-accent shadow-lg shadow-primary/30" 
+                    : "border-muted-foreground/30 hover:border-primary/50"
+                }`}
+              >
+                All Projects
+              </Button>
+              {allTechs.map((tech) => (
+                <Button
+                  key={tech}
+                  onClick={() => setSelectedFilter(tech)}
+                  variant={selectedFilter === tech ? "default" : "outline"}
+                  size="sm"
+                  className={`transition-all duration-300 font-medium ${
+                    selectedFilter === tech 
+                      ? "bg-gradient-to-r from-primary to-accent shadow-lg shadow-primary/30" 
+                      : "border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5"
+                  }`}
+                >
+                  {tech}
+                </Button>
+              ))}
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            {projects.map((project, index) => (
-              <Card
-                key={index}
-                className="border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group"
-                style={{ transitionDelay: `${index * 100}ms` }}
-              >
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-4 mb-2">
-                    <div className="p-3 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                      <Folder className="h-6 w-6" />
+          {/* Projects Grid with premium styling */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredProjects.length > 0 ? (
+              filteredProjects.map((project, index) => (
+                <Card
+                  key={index}
+                  className="group relative overflow-hidden border border-primary/20 hover:border-primary/60 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 bg-gradient-to-br from-card via-card to-card/80 backdrop-blur-sm before:absolute before:inset-0 before:bg-gradient-to-br before:from-primary/0 before:via-primary/0 before:to-accent/0 before:opacity-0 before:group-hover:opacity-10 before:transition-opacity before:duration-500"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  {/* Glow effect on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-transparent to-primary/0 group-hover:from-primary/10 group-hover:via-primary/5 group-hover:to-accent/10 transition-all duration-300 opacity-0 group-hover:opacity-100" />
+
+                  <CardHeader className="relative z-10">
+                    <div className="flex items-start justify-between gap-4 mb-3">
+                      <div className="p-3 rounded-lg bg-primary/15 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                        <Folder className="h-5 w-5" />
+                      </div>
+                      {project.link && (
+                        <a
+                          href={project.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2 rounded-lg bg-muted/50 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-primary/10 hover:text-primary"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      )}
                     </div>
-                    {project.link && (
-                      <a
-                        href={project.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary"
-                      >
-                        <ExternalLink className="h-5 w-5" />
-                      </a>
+                    <CardTitle className="text-lg text-balance leading-tight">{project.title}</CardTitle>
+                    {project.company && (
+                      <CardDescription className="text-sm font-medium text-primary/80">{project.company}</CardDescription>
                     )}
-                  </div>
-                  <CardTitle className="text-xl text-balance">{project.title}</CardTitle>
-                  {project.company && (
-                    <CardDescription className="text-base font-medium">{project.company}</CardDescription>
-                  )}
-                  <Badge variant="secondary" className="w-fit">
-                    {project.role}
-                  </Badge>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground leading-relaxed text-sm">{project.description}</p>
-                  <div>
-                    <h4 className="text-sm font-semibold mb-2">Key Highlights:</h4>
-                    <ul className="space-y-1">
-                      {project.highlights.map((highlight, i) => (
-                        <li key={i} className="text-sm text-muted-foreground flex gap-2">
-                          <span className="text-primary text-xs mt-0.5">▹</span>
-                          <span>{highlight}</span>
-                        </li>
+                    <Badge variant="secondary" className="w-fit mt-2 text-xs">
+                      {project.role}
+                    </Badge>
+                  </CardHeader>
+                  <CardContent className="relative z-10 space-y-4">
+                    <p className="text-muted-foreground leading-relaxed text-sm line-clamp-3">
+                      {project.description}
+                    </p>
+                    <div>
+                      <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground/70 mb-2">
+                        Highlights
+                      </h4>
+                      <ul className="space-y-1">
+                        {project.highlights.slice(0, 2).map((highlight, i) => (
+                          <li key={i} className="text-xs text-muted-foreground flex gap-2 leading-relaxed">
+                            <span className="text-primary text-xs mt-0.5 flex-shrink-0">▹</span>
+                            <span>{highlight}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 pt-2">
+                      {project.technologies.map((tech, i) => (
+                        <Badge
+                          key={i}
+                          onClick={() => setSelectedFilter(tech)}
+                          variant="outline"
+                          className="text-xs font-mono cursor-pointer hover:bg-primary/20 transition-colors"
+                        >
+                          {tech}
+                        </Badge>
                       ))}
-                    </ul>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {project.technologies.map((tech, i) => (
-                      <Badge key={i} variant="outline" className="text-xs font-mono">
-                        {tech}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full flex items-center justify-center py-12">
+                <p className="text-muted-foreground text-center">
+                  No projects found with the selected technology. Try selecting a different filter.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
