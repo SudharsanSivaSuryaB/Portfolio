@@ -97,8 +97,8 @@ export function Certifications() {
         >
           <div>
             <div className="flex items-center gap-4 mb-6">
-              <span className="text-primary font-mono text-xl">05.</span>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Certifications</h2>
+              <span className="text-primary font-mono text-2xl font-black">6.</span>
+              <h2 className="text-5xl sm:text-6xl font-bold tracking-tighter">Certifications</h2>
               <div className="flex-1 h-px bg-border" />
             </div>
           </div>

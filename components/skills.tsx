@@ -141,7 +141,7 @@ export function Skills() {
           }`}
         >
           <div className="space-y-4">
-            <span className="text-primary font-mono text-sm font-black uppercase tracking-[0.2em]">Core Competencies</span>
+            <span className="text-primary font-mono text-2xl font-black">4.</span>
             <h2 className="text-6xl sm:text-7xl font-black tracking-tighter">Skills & Expertise</h2>
             <p className="text-muted-foreground text-lg max-w-3xl leading-relaxed">
               A comprehensive suite of technical expertise and specialized competencies developed through hands-on experience and continuous learning in modern software engineering.

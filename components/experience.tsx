@@ -53,7 +53,7 @@ export function Experience() {
           }`}
         >
           <div className="space-y-4">
-            <span className="text-primary font-mono text-sm font-black uppercase tracking-[0.2em]">Career Journey</span>
+            <span className="text-primary font-mono text-2xl font-black">2.</span>
             <h2 className="text-6xl sm:text-7xl font-black tracking-tighter">Professional Experience</h2>
             <p className="text-muted-foreground text-lg max-w-3xl leading-relaxed">
               Building scalable systems and innovative solutions across multiple organizations, from early-stage startups to enterprise environments.

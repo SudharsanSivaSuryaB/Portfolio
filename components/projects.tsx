@@ -150,7 +150,7 @@ export function Projects() {
         >
           <div className="space-y-4 mb-12">
             <div className="flex items-center gap-4">
-              <span className="text-primary font-mono text-2xl font-black">03.</span>
+              <span className="text-primary font-mono text-2xl font-black">3.</span>
               <h2 className="text-5xl sm:text-6xl font-bold tracking-tighter">Featured Projects</h2>
               <div className="hidden md:flex flex-1 h-1 bg-gradient-to-r from-primary via-accent to-transparent rounded-full" />
             </div>

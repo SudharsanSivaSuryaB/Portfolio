@@ -21,8 +21,8 @@ export function About() {
         >
           <div>
             <div className="flex items-center gap-4 mb-8">
-              <span className="text-primary font-mono text-xl font-bold">01.</span>
-              <h2 className="text-4xl sm:text-5xl font-bold tracking-tight">About Me</h2>
+              <span className="text-primary font-mono text-2xl font-black">1.</span>
+              <h2 className="text-5xl sm:text-6xl font-bold tracking-tighter">About Me</h2>
               <div className="flex-1 h-px bg-gradient-to-r from-primary/50 to-transparent" />
             </div>
             <p className="text-muted-foreground text-lg max-w-2xl">
