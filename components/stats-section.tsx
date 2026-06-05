@@ -10,31 +10,17 @@ interface StatItem {
   description: string
 }
 
+// Add your original stats/metrics here
+// Template:
+// {
+//   label: "Stat Name",
+//   value: 20,
+//   suffix: "+", // Can be "+", "%", "x", etc.
+//   description: "Description of the metric",
+// }
+
 const stats: StatItem[] = [
-  {
-    label: "Projects Completed",
-    value: 20,
-    suffix: "+",
-    description: "Full-stack applications and integrations",
-  },
-  {
-    label: "Years of Experience",
-    value: 5,
-    suffix: "+",
-    description: "Across startups and enterprises",
-  },
-  {
-    label: "Performance Improvement",
-    value: 60,
-    suffix: "%",
-    description: "Average optimization achieved",
-  },
-  {
-    label: "Client Satisfaction",
-    value: 100,
-    suffix: "%",
-    description: "Projects delivered successfully",
-  },
+  // Add your stats below - keep it to 4 items for optimal display
 ]
 
 function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {

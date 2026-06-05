@@ -6,39 +6,18 @@ import { useInView } from "@/hooks/use-in-view"
 import { useRef } from "react"
 import { Star } from "lucide-react"
 
+// Add your original testimonials here
+// Template:
+// {
+//   name: "Person Name",
+//   role: "Job Title at Company",
+//   content: "Your actual testimonial text here...",
+//   rating: 5, // 1-5 stars
+//   initials: "PN", // First letter of name and last name
+// }
+
 const testimonials = [
-  {
-    name: "Sarah Johnson",
-    role: "Product Manager at TechCorp",
-    content:
-      "Working with Sudharsan was exceptional. His ability to translate complex requirements into scalable solutions is remarkable. The AI integration he implemented reduced our processing time by 60%.",
-    rating: 5,
-    initials: "SJ",
-  },
-  {
-    name: "Michael Chen",
-    role: "CTO at InnovateTech",
-    content:
-      "Outstanding full-stack engineer with deep expertise in Golang and React. His real-time system architecture was production-ready from day one. Highly recommended for enterprise projects.",
-    rating: 5,
-    initials: "MC",
-  },
-  {
-    name: "Emma Rodriguez",
-    role: "Startup Founder",
-    content:
-      "Sudharsan brought technical excellence and strategic thinking to our MVP. His rapid prototyping and problem-solving skills were instrumental in our Series A funding. A true technical leader.",
-    rating: 5,
-    initials: "ER",
-  },
-  {
-    name: "David Kumar",
-    role: "Engineering Lead at Enterprise Corp",
-    content:
-      "Exceptional attention to detail and code quality. His contributions to our architecture improved system performance by 45% while maintaining clean, maintainable code.",
-    rating: 5,
-    initials: "DK",
-  },
+  // Add your testimonials below
 ]
 
 export function Testimonials() {
