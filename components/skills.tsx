@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useInView } from "@/hooks/use-in-view"
 import { useRef } from "react"
+import { SkillFlashCards } from "@/components/skill-flash-cards"
 import {
   Code2,
   Database,
@@ -145,6 +146,17 @@ export function Skills() {
             <p className="text-muted-foreground text-lg max-w-3xl leading-relaxed">
               A comprehensive suite of technical expertise and specialized competencies developed through hands-on experience and continuous learning in modern software engineering.
             </p>
+          </div>
+
+          {/* Skill Flash Cards Section */}
+          <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-card/50 to-card/80 backdrop-blur-sm p-8 md:p-12">
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-primary">Interactive Cards</p>
+                <h3 className="text-2xl md:text-3xl font-bold tracking-tight">Explore Skill Categories</h3>
+              </div>
+              <SkillFlashCards />
+            </div>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
