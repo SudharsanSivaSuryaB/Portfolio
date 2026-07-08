@@ -408,14 +408,13 @@
   }
 
   .edit-button-primary {
-    @apply edit-button hover:bg-primary/20 text-primary;
+    @apply p-1.5 rounded-md transition-all hover:bg-primary/20 text-primary;
   }
 
   .edit-button-danger {
-    @apply edit-button hover:bg-red-500/20 hover:text-red-600 text-muted-foreground;
+    @apply p-1.5 rounded-md transition-all hover:bg-red-500/20 hover:text-red-600 text-muted-foreground;
   }
 
-  /* Prevent absolute positioned elements from overlapping */
   .edit-mode-safe-zone {
     @apply space-y-2 px-1;
   }
