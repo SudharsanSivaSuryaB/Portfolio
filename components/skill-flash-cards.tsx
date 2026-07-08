@@ -215,11 +215,11 @@ export function SkillFlashCards() {
   const Icon = currentCard.icon
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-8 px-1">
       {/* Flash Card */}
-      <div className="relative">
+      <div className="relative pt-2">
         {isEditMode && (
-          <div className="absolute top-4 right-4 z-30 flex gap-1">
+          <div className="absolute top-4 left-4 z-30 flex gap-1">
             <button
               onClick={() => handleEditCard(currentCard)}
               className="p-2 rounded-lg bg-primary/20 hover:bg-primary/40 text-primary transition-all"
@@ -284,7 +284,7 @@ export function SkillFlashCards() {
         </Card>
 
         {/* Card Counter with Enhanced Styling */}
-        <div className="absolute top-6 right-6 z-20">
+        <div className={`absolute z-20 ${isEditMode ? 'top-16 right-6' : 'top-6 right-6'}`}>
           <Badge className="font-mono text-xs font-bold px-3 py-1.5 bg-gradient-to-r from-primary/30 to-accent/30 border border-primary/50 hover:border-primary/80 transition-all">
             {currentIndex + 1} / {flashCards.length}
           </Badge>

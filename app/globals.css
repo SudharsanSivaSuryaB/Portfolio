@@ -388,3 +388,35 @@
     animation: particle-3 3.5s ease-in-out infinite 1s;
   }
 }
+
+@layer utilities {
+  /* Edit mode container utilities to prevent overlaps */
+  .edit-mode-container {
+    @apply relative;
+  }
+
+  .edit-mode-card-header {
+    @apply relative z-10;
+  }
+
+  .edit-controls {
+    @apply flex gap-1 flex-shrink-0;
+  }
+
+  .edit-button {
+    @apply p-1.5 rounded-md transition-all;
+  }
+
+  .edit-button-primary {
+    @apply edit-button hover:bg-primary/20 text-primary;
+  }
+
+  .edit-button-danger {
+    @apply edit-button hover:bg-red-500/20 hover:text-red-600 text-muted-foreground;
+  }
+
+  /* Prevent absolute positioned elements from overlapping */
+  .edit-mode-safe-zone {
+    @apply space-y-2 px-1;
+  }
+}

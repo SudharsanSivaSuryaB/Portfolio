@@ -149,12 +149,14 @@ export function Skills() {
 
           {/* Skill Flash Cards Section */}
           <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-card/50 to-card/80 backdrop-blur-sm p-8 md:p-12">
-            <div className="space-y-6">
+            <div className="space-y-6 overflow-hidden">
               <div className="space-y-2">
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-primary">Interactive Cards</p>
                 <h3 className="text-2xl md:text-3xl font-bold tracking-tight">Explore Skill Categories</h3>
               </div>
-              <SkillFlashCards />
+              <div className="relative">
+                <SkillFlashCards />
+              </div>
             </div>
           </div>
 
