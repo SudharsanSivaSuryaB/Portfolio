@@ -1,9 +1,13 @@
 "use client"
 
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
-import { Award, ExternalLink } from "lucide-react"
+import { Award, ExternalLink, Trash2, Plus } from "lucide-react"
 import { useInView } from "@/hooks/use-in-view"
-import { useRef } from "react"
+import { useRef, useState } from "react"
+import { useEditMode } from "@/context/edit-mode-context"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 
 const certifications = [
   {
@@ -86,6 +90,27 @@ const hackerRankCerts = [
 export function Certifications() {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref)
+  const { isEditMode } = useEditMode()
+  const [localCerts, setLocalCerts] = useState(certifications)
+  const [localHackerRank, setLocalHackerRank] = useState(hackerRankCerts)
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [newCert, setNewCert] = useState({ title: "", issuer: "", date: "", link: "" })
+
+  const handleDeleteCert = (index: number) => {
+    setLocalCerts((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleDeleteHackerRank = (index: number) => {
+    setLocalHackerRank((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleAddCert = () => {
+    if (newCert.title && newCert.issuer) {
+      setLocalCerts((prev) => [...prev, { title: newCert.title, issuer: newCert.issuer, date: newCert.date || undefined, link: newCert.link || undefined }])
+      setNewCert({ title: "", issuer: "", date: "", link: "" })
+      setIsAddDialogOpen(false)
+    }
+  }
 
   return (
     <section id="certifications" className="py-24 px-4 sm:px-6 lg:px-8 bg-muted/30" ref={ref}>
@@ -100,31 +125,52 @@ export function Certifications() {
               <span className="text-primary font-mono text-2xl font-black">6.</span>
               <h2 className="text-5xl sm:text-6xl font-bold tracking-tighter">Certifications</h2>
               <div className="flex-1 h-px bg-border" />
+              {isEditMode && (
+                <Button
+                  onClick={() => setIsAddDialogOpen(true)}
+                  size="sm"
+                  className="gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add
+                </Button>
+              )}
             </div>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {certifications.map((cert, index) => (
+            {localCerts.map((cert, index) => (
               <Card
                 key={index}
                 className="border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg group relative"
                 style={{ transitionDelay: `${index * 50}ms` }}
               >
-                {cert.link && (
-                  <a
-                    href={cert.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="absolute top-3 right-3 text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
-                )}
+                <div className="absolute top-3 right-3 flex gap-1">
+                  {isEditMode && (
+                    <button
+                      onClick={() => handleDeleteCert(index)}
+                      className="p-1.5 rounded-md bg-red-500/20 hover:bg-red-500/40 text-red-600 hover:text-red-700 transition-all"
+                      title="Delete certificate"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
+                  {cert.link && (
+                    <a
+                      href={cert.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-1.5 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  )}
+                </div>
                 <CardHeader>
                   <div className="flex items-start gap-3">
                     <Award className="h-5 w-5 text-primary flex-shrink-0 mt-1 group-hover:scale-110 transition-transform" />
-                    <div className="space-y-1">
-                      <CardTitle className="text-sm leading-tight text-balance pr-6">{cert.title}</CardTitle>
+                    <div className="space-y-1 pr-6">
+                      <CardTitle className="text-sm leading-tight text-balance">{cert.title}</CardTitle>
                       <p className="text-xs text-muted-foreground">{cert.issuer}</p>
                       {cert.date && <p className="text-xs text-muted-foreground font-mono">{cert.date}</p>}
                     </div>
@@ -140,24 +186,35 @@ export function Certifications() {
               HackerRank Certifications
             </h3>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {hackerRankCerts.map((cert, index) => (
+              {localHackerRank.map((cert, index) => (
                 <Card
                   key={index}
                   className="border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg group relative"
                 >
-                  <a
-                    href={cert.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="absolute top-3 right-3 text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
+                  <div className="absolute top-3 right-3 flex gap-1">
+                    {isEditMode && (
+                      <button
+                        onClick={() => handleDeleteHackerRank(index)}
+                        className="p-1.5 rounded-md bg-red-500/20 hover:bg-red-500/40 text-red-600 hover:text-red-700 transition-all"
+                        title="Delete certificate"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
+                    <a
+                      href={cert.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-1.5 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  </div>
                   <CardHeader>
                     <div className="flex items-start gap-3">
                       <Award className="h-5 w-5 text-primary flex-shrink-0 mt-1 group-hover:scale-110 transition-transform" />
-                      <div className="space-y-1">
-                        <CardTitle className="text-sm leading-tight text-balance pr-6">{cert.title}</CardTitle>
+                      <div className="space-y-1 pr-6">
+                        <CardTitle className="text-sm leading-tight text-balance">{cert.title}</CardTitle>
                         <p className="text-xs text-muted-foreground">HackerRank</p>
                       </div>
                     </div>
@@ -167,6 +224,55 @@ export function Certifications() {
             </div>
           </div>
         </div>
+
+        {/* Add Certificate Dialog */}
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Certificate</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Title</label>
+                <Input
+                  placeholder="Certificate title"
+                  value={newCert.title}
+                  onChange={(e) => setNewCert({ ...newCert, title: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Issuer</label>
+                <Input
+                  placeholder="Issuing organization"
+                  value={newCert.issuer}
+                  onChange={(e) => setNewCert({ ...newCert, issuer: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Date (optional)</label>
+                <Input
+                  placeholder="e.g., Jan 2024"
+                  value={newCert.date}
+                  onChange={(e) => setNewCert({ ...newCert, date: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Link (optional)</label>
+                <Input
+                  placeholder="https://..."
+                  value={newCert.link}
+                  onChange={(e) => setNewCert({ ...newCert, link: e.target.value })}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleAddCert}>Add Certificate</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </section>
   )

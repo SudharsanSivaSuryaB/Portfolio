@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { useInView } from "@/hooks/use-in-view"
 import { useRef } from "react"
 import { SkillFlashCards } from "@/components/skill-flash-cards"
+import { EditableSectionHeader } from "@/components/editable-section-header"
 import {
   Code2,
   Database,
@@ -140,13 +141,11 @@ export function Skills() {
             isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <div className="space-y-4">
-            <span className="text-primary font-mono text-2xl font-black">4.</span>
-            <h2 className="text-6xl sm:text-7xl font-black tracking-tighter">Skills & Expertise</h2>
-            <p className="text-muted-foreground text-lg max-w-3xl leading-relaxed">
-              A comprehensive suite of technical expertise and specialized competencies developed through hands-on experience and continuous learning in modern software engineering.
-            </p>
-          </div>
+          <EditableSectionHeader
+            number="4."
+            title="Skills & Expertise"
+            description="A comprehensive suite of technical expertise and specialized competencies developed through hands-on experience and continuous learning in modern software engineering."
+          />
 
           {/* Skill Flash Cards Section */}
           <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-card/50 to-card/80 backdrop-blur-sm p-8 md:p-12">
