@@ -3,11 +3,26 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useInView } from "@/hooks/use-in-view"
-import { useRef } from "react"
-import { Briefcase } from "lucide-react"
+import { useRef, useState } from "react"
+import { Briefcase, Trash2, Plus, Edit2 } from "lucide-react"
+import { useEditMode } from "@/context/edit-mode-context"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 
-const experiences = [
+interface Experience {
+  id: string
+  title: string
+  company: string
+  period: string
+  description: string[]
+  technologies: string[]
+}
+
+const initialExperiences: Experience[] = [
   {
+    id: "1",
     title: "Software Developer",
     company: "AVASOFT",
     period: "July 2024 - May 2025",
@@ -23,6 +38,7 @@ const experiences = [
     technologies: ["Golang", "React", "TypeScript", "Node.js", "WebSocket", "AI Integration"],
   },
   {
+    id: "2",
     title: "Intern – Application Development",
     company: "Kaar Technologies",
     period: "6 months",
@@ -38,6 +54,84 @@ const experiences = [
 export function Experience() {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref)
+  const { isEditMode } = useEditMode()
+  const [experiences, setExperiences] = useState<Experience[]>(initialExperiences)
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [editingExp, setEditingExp] = useState<Experience | null>(null)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [newExp, setNewExp] = useState({
+    title: "",
+    company: "",
+    period: "",
+    description: "",
+    technologies: "",
+  })
+
+  const handleAddExperience = () => {
+    if (newExp.title && newExp.company && newExp.period && newExp.description) {
+      const descArray = newExp.description.split("\n").filter((d) => d.trim())
+      const techArray = newExp.technologies
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t)
+
+      const exp: Experience = {
+        id: Date.now().toString(),
+        title: newExp.title,
+        company: newExp.company,
+        period: newExp.period,
+        description: descArray,
+        technologies: techArray,
+      }
+      setExperiences([...experiences, exp])
+      setNewExp({ title: "", company: "", period: "", description: "", technologies: "" })
+      setIsAddDialogOpen(false)
+    }
+  }
+
+  const handleEditExperience = (exp: Experience) => {
+    setEditingExp(exp)
+    setNewExp({
+      title: exp.title,
+      company: exp.company,
+      period: exp.period,
+      description: exp.description.join("\n"),
+      technologies: exp.technologies.join(", "),
+    })
+    setIsEditDialogOpen(true)
+  }
+
+  const handleSaveEdit = () => {
+    if (editingExp && newExp.title && newExp.company && newExp.period && newExp.description) {
+      const descArray = newExp.description.split("\n").filter((d) => d.trim())
+      const techArray = newExp.technologies
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t)
+
+      setExperiences(
+        experiences.map((e) =>
+          e.id === editingExp.id
+            ? {
+                ...e,
+                title: newExp.title,
+                company: newExp.company,
+                period: newExp.period,
+                description: descArray,
+                technologies: techArray,
+              }
+            : e
+        )
+      )
+      setEditingExp(null)
+      setNewExp({ title: "", company: "", period: "", description: "", technologies: "" })
+      setIsEditDialogOpen(false)
+    }
+  }
+
+  const handleDeleteExperience = (id: string) => {
+    setExperiences(experiences.filter((e) => e.id !== id))
+  }
 
   return (
     <section id="experience" className="py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-background via-background/95 to-background" ref={ref}>
@@ -53,11 +147,25 @@ export function Experience() {
           }`}
         >
           <div className="space-y-4">
-            <span className="text-primary font-mono text-2xl font-black">2.</span>
-            <h2 className="text-6xl sm:text-7xl font-black tracking-tighter">Professional Experience</h2>
-            <p className="text-muted-foreground text-lg max-w-3xl leading-relaxed">
-              Building scalable systems and innovative solutions across multiple organizations, from early-stage startups to enterprise environments.
-            </p>
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-4 flex-1">
+                <span className="text-primary font-mono text-2xl font-black">2.</span>
+                <h2 className="text-6xl sm:text-7xl font-black tracking-tighter">Professional Experience</h2>
+                <p className="text-muted-foreground text-lg max-w-3xl leading-relaxed">
+                  Building scalable systems and innovative solutions across multiple organizations, from early-stage startups to enterprise environments.
+                </p>
+              </div>
+              {isEditMode && (
+                <Button
+                  onClick={() => setIsAddDialogOpen(true)}
+                  size="sm"
+                  className="gap-2 mt-1"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Experience
+                </Button>
+              )}
+            </div>
           </div>
 
           <div className="space-y-8 relative">
@@ -66,7 +174,7 @@ export function Experience() {
 
             {experiences.map((exp, index) => (
               <Card
-                key={index}
+                key={exp.id}
                 className="relative border border-primary/20 hover:border-primary/60 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 group bg-gradient-to-br from-card via-card to-card/80 backdrop-blur-sm overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-br before:from-primary/0 before:via-primary/0 before:to-accent/0 before:opacity-0 before:group-hover:opacity-10 before:transition-opacity before:duration-500"
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
@@ -85,9 +193,29 @@ export function Experience() {
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                         <CardTitle className="text-lg leading-tight">{exp.title}</CardTitle>
-                        <Badge variant="secondary" className="w-fit text-xs">
-                          {exp.period}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="secondary" className="w-fit text-xs">
+                            {exp.period}
+                          </Badge>
+                          {isEditMode && (
+                            <div className="flex gap-1">
+                              <button
+                                onClick={() => handleEditExperience(exp)}
+                                className="p-1 rounded-md hover:bg-primary/20 text-primary transition-all"
+                                title="Edit experience"
+                              >
+                                <Edit2 className="h-3 w-3" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteExperience(exp.id)}
+                                className="p-1 rounded-md hover:bg-red-500/20 hover:text-red-600 text-muted-foreground transition-all"
+                                title="Delete experience"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <CardDescription className="text-sm font-medium text-primary/70">{exp.company}</CardDescription>
                     </div>
@@ -119,6 +247,126 @@ export function Experience() {
           </div>
         </div>
       </div>
+
+      {/* Add Experience Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add New Experience</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">Job Title</label>
+                <Input
+                  placeholder="e.g., Senior Developer"
+                  value={newExp.title}
+                  onChange={(e) => setNewExp({ ...newExp, title: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Company</label>
+                <Input
+                  placeholder="e.g., Tech Corp"
+                  value={newExp.company}
+                  onChange={(e) => setNewExp({ ...newExp, company: e.target.value })}
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Period</label>
+              <Input
+                placeholder="e.g., Jan 2024 - Present"
+                value={newExp.period}
+                onChange={(e) => setNewExp({ ...newExp, period: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Description (one bullet point per line)</label>
+              <Textarea
+                placeholder="Enter responsibilities and achievements. Each line becomes a bullet point."
+                value={newExp.description}
+                onChange={(e) => setNewExp({ ...newExp, description: e.target.value })}
+                rows={6}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Technologies (comma-separated)</label>
+              <Input
+                placeholder="e.g., React, TypeScript, Node.js"
+                value={newExp.technologies}
+                onChange={(e) => setNewExp({ ...newExp, technologies: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddExperience}>Add Experience</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Experience Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Experience</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">Job Title</label>
+                <Input
+                  placeholder="Job title"
+                  value={newExp.title}
+                  onChange={(e) => setNewExp({ ...newExp, title: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Company</label>
+                <Input
+                  placeholder="Company name"
+                  value={newExp.company}
+                  onChange={(e) => setNewExp({ ...newExp, company: e.target.value })}
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Period</label>
+              <Input
+                placeholder="e.g., Jan 2024 - Present"
+                value={newExp.period}
+                onChange={(e) => setNewExp({ ...newExp, period: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Description (one bullet point per line)</label>
+              <Textarea
+                placeholder="Enter responsibilities and achievements. Each line becomes a bullet point."
+                value={newExp.description}
+                onChange={(e) => setNewExp({ ...newExp, description: e.target.value })}
+                rows={6}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Technologies (comma-separated)</label>
+              <Input
+                placeholder="e.g., React, TypeScript, Node.js"
+                value={newExp.technologies}
+                onChange={(e) => setNewExp({ ...newExp, technologies: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }
