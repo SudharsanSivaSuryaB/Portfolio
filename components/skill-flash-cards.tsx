@@ -3,7 +3,12 @@
 import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ChevronLeft, ChevronRight, Zap, Brain, Code2, Database, Briefcase, BarChart3, Layers, Lightbulb } from "lucide-react"
+import { ChevronLeft, ChevronRight, Zap, Brain, Code2, Database, Briefcase, BarChart3, Layers, Lightbulb, Trash2, Plus, Edit2 } from "lucide-react"
+import { useEditMode } from "@/context/edit-mode-context"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 
 interface FlashCard {
   id: string
@@ -15,7 +20,7 @@ interface FlashCard {
   description: string
 }
 
-const flashCards: FlashCard[] = [
+const initialFlashCards: FlashCard[] = [
   {
     id: "full-stack",
     title: "Full Stack Development",
@@ -118,7 +123,18 @@ const colorMap = {
 }
 
 export function SkillFlashCards() {
+  const { isEditMode } = useEditMode()
+  const [flashCards, setFlashCards] = useState<FlashCard[]>(initialFlashCards)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [editingCard, setEditingCard] = useState<FlashCard | null>(null)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [newCard, setNewCard] = useState({
+    title: "",
+    description: "",
+    skills: "",
+    icon: "Code2",
+  })
 
   const handlePrevious = () => {
     setCurrentIndex((prev) => (prev === 0 ? flashCards.length - 1 : prev - 1))
@@ -126,6 +142,72 @@ export function SkillFlashCards() {
 
   const handleNext = () => {
     setCurrentIndex((prev) => (prev === flashCards.length - 1 ? 0 : prev + 1))
+  }
+
+  const handleAddCard = () => {
+    if (newCard.title && newCard.description && newCard.skills) {
+      const skillsArray = newCard.skills
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s)
+      const card: FlashCard = {
+        id: Date.now().toString(),
+        title: newCard.title,
+        description: newCard.description,
+        skills: skillsArray,
+        count: `${skillsArray.length} Technologies`,
+        icon: Code2,
+        color: "from-blue-500/20 to-blue-600/20",
+      }
+      setFlashCards([...flashCards, card])
+      setNewCard({ title: "", description: "", skills: "", icon: "Code2" })
+      setIsAddDialogOpen(false)
+    }
+  }
+
+  const handleEditCard = (card: FlashCard) => {
+    setEditingCard(card)
+    setNewCard({
+      title: card.title,
+      description: card.description,
+      skills: card.skills.join(", "),
+      icon: "Code2",
+    })
+    setIsEditDialogOpen(true)
+  }
+
+  const handleSaveEdit = () => {
+    if (editingCard && newCard.title && newCard.description && newCard.skills) {
+      const skillsArray = newCard.skills
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s)
+      setFlashCards(
+        flashCards.map((c) =>
+          c.id === editingCard.id
+            ? {
+                ...c,
+                title: newCard.title,
+                description: newCard.description,
+                skills: skillsArray,
+                count: `${skillsArray.length} Technologies`,
+              }
+            : c
+        )
+      )
+      setEditingCard(null)
+      setNewCard({ title: "", description: "", skills: "", icon: "Code2" })
+      setIsEditDialogOpen(false)
+    }
+  }
+
+  const handleDeleteCard = (id: string) => {
+    if (flashCards.length === 1) return
+    const newCards = flashCards.filter((c) => c.id !== id)
+    setFlashCards(newCards)
+    if (currentIndex >= newCards.length) {
+      setCurrentIndex(newCards.length - 1)
+    }
   }
 
   const currentCard = flashCards[currentIndex]
@@ -136,6 +218,25 @@ export function SkillFlashCards() {
     <div className="w-full space-y-8">
       {/* Flash Card */}
       <div className="relative">
+        {isEditMode && (
+          <div className="absolute top-4 right-4 z-30 flex gap-1">
+            <button
+              onClick={() => handleEditCard(currentCard)}
+              className="p-2 rounded-lg bg-primary/20 hover:bg-primary/40 text-primary transition-all"
+              title="Edit card"
+            >
+              <Edit2 className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => handleDeleteCard(currentCard.id)}
+              disabled={flashCards.length === 1}
+              className="p-2 rounded-lg bg-red-500/20 hover:bg-red-500/40 hover:text-red-600 text-muted-foreground transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Delete card"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+        )}
         <Card
           className={`relative overflow-hidden border ${colors.border} transition-all duration-500 group bg-gradient-to-br ${colors.bg} backdrop-blur-xl min-h-96 flex flex-col justify-between shadow-lg hover:shadow-2xl hover:-translate-y-1`}
         >
@@ -230,6 +331,102 @@ export function SkillFlashCards() {
       <p className="text-xs text-center text-muted-foreground hover:text-foreground transition-colors">
         <span className="font-semibold text-primary">Navigate</span> using arrow buttons • <span className="font-semibold text-primary">Hover</span> over dots to preview
       </p>
+
+      {isEditMode && (
+        <div className="flex justify-center">
+          <Button
+            onClick={() => setIsAddDialogOpen(true)}
+            className="gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Add Skill Card
+          </Button>
+        </div>
+      )}
+
+      {/* Add Card Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Skill Card</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Card Title</label>
+              <Input
+                placeholder="e.g., Frontend Development"
+                value={newCard.title}
+                onChange={(e) => setNewCard({ ...newCard, title: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Description</label>
+              <Textarea
+                placeholder="e.g., Building modern, responsive user interfaces"
+                value={newCard.description}
+                onChange={(e) => setNewCard({ ...newCard, description: e.target.value })}
+                rows={3}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Skills (comma-separated)</label>
+              <Input
+                placeholder="e.g., React, TypeScript, Tailwind CSS, JavaScript"
+                value={newCard.skills}
+                onChange={(e) => setNewCard({ ...newCard, skills: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddCard}>Add Card</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Card Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Skill Card</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Card Title</label>
+              <Input
+                placeholder="Card title"
+                value={newCard.title}
+                onChange={(e) => setNewCard({ ...newCard, title: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Description</label>
+              <Textarea
+                placeholder="Card description"
+                value={newCard.description}
+                onChange={(e) => setNewCard({ ...newCard, description: e.target.value })}
+                rows={3}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Skills (comma-separated)</label>
+              <Input
+                placeholder="e.g., React, TypeScript, Tailwind CSS"
+                value={newCard.skills}
+                onChange={(e) => setNewCard({ ...newCard, skills: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

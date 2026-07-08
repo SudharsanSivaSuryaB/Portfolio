@@ -5,10 +5,26 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useInView } from "@/hooks/use-in-view"
 import { useRef, useState, useMemo } from "react"
-import { Folder, ExternalLink } from "lucide-react"
+import { Folder, ExternalLink, Trash2, Plus, Edit2 } from "lucide-react"
+import { useEditMode } from "@/context/edit-mode-context"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 
-const projects = [
+interface Project {
+  id: string
+  title: string
+  company?: string
+  role: string
+  description: string
+  technologies: string[]
+  highlights: string[]
+  link?: string
+}
+
+const initialProjects: Project[] = [
   {
+    id: "1",
     title: "AVALON – AI-Integrated Project Management Tool",
     company: "Avasoft",
     role: "Software Developer",
@@ -23,6 +39,7 @@ const projects = [
     ],
   },
   {
+    id: "2",
     title: "PPS – Protection Plus Security",
     company: "Avasoft",
     role: "Software Developer",
@@ -37,6 +54,7 @@ const projects = [
     ],
   },
   {
+    id: "3",
     title: "Sales Forecasting Web Application",
     role: "Developer",
     description:
@@ -49,6 +67,7 @@ const projects = [
     ],
   },
   {
+    id: "4",
     title: "Emma - Email Writer AI for Recruitment",
     role: "Developer",
     description:
@@ -63,6 +82,7 @@ const projects = [
     link: "https://www.linkedin.com/posts/sudharsan-siva-surya-balasubramaniam-b62236220_ai-emailautomation-productivity-activity-7366869648530690050-H7yt?utm_source=share&utm_medium=member_desktop",
   },
   {
+    id: "5",
     title: "Lina - LinkedIn Content Creator AI",
     role: "Developer",
     description:
@@ -77,6 +97,7 @@ const projects = [
     link: "https://www.linkedin.com/posts/sudharsan-siva-surya-balasubramaniam-b62236220_ai-innovation-contentcreation-activity-7366866179912556544-dwOB?utm_source=share&utm_medium=member_desktop",
   },
   {
+    id: "6",
     title: "Smart Calculator App with Voice Recognition",
     role: "Developer",
     description:
@@ -91,6 +112,7 @@ const projects = [
     link: "https://www.linkedin.com/posts/sudharsan-siva-surya-balasubramaniam-b62236220_voicerecognition-smartcalculator-innovation-activity-7366858925012312066-8aAb?utm_source=share&utm_medium=member_desktop",
   },
   {
+    id: "7",
     title: "Offline Expense Tracker",
     role: "Developer",
     description:
@@ -105,6 +127,7 @@ const projects = [
     link: "https://www.linkedin.com/posts/sudharsan-siva-surya-balasubramaniam-b62236220_expensetracker-offlinetools-financemanagement-activity-7366860497729585153-pdBD?utm_source=share&utm_medium=member_desktop",
   },
   {
+    id: "8",
     title: "Jerry AI for Laptops and PC's",
     role: "Developer",
     description:
@@ -118,7 +141,21 @@ const projects = [
 export function Projects() {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref)
+  const { isEditMode } = useEditMode()
+  const [projects, setProjects] = useState<Project[]>(initialProjects)
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null)
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [editingProject, setEditingProject] = useState<Project | null>(null)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [newProject, setNewProject] = useState({
+    title: "",
+    company: "",
+    role: "",
+    description: "",
+    technologies: "",
+    highlights: "",
+    link: "",
+  })
 
   // Extract all unique technologies
   const allTechs = useMemo(() => {
@@ -127,13 +164,91 @@ export function Projects() {
       project.technologies.forEach((tech) => techs.add(tech))
     })
     return Array.from(techs).sort()
-  }, [])
+  }, [projects])
 
   // Filter projects based on selected technology
   const filteredProjects = useMemo(() => {
     if (!selectedFilter) return projects
     return projects.filter((project) => project.technologies.includes(selectedFilter))
-  }, [selectedFilter])
+  }, [selectedFilter, projects])
+
+  const handleAddProject = () => {
+    if (newProject.title && newProject.role && newProject.description) {
+      const techArray = newProject.technologies
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t)
+      const highlightsArray = newProject.highlights
+        .split("\n")
+        .map((h) => h.trim())
+        .filter((h) => h)
+
+      const project: Project = {
+        id: Date.now().toString(),
+        title: newProject.title,
+        company: newProject.company || undefined,
+        role: newProject.role,
+        description: newProject.description,
+        technologies: techArray,
+        highlights: highlightsArray,
+        link: newProject.link || undefined,
+      }
+      setProjects([...projects, project])
+      setNewProject({ title: "", company: "", role: "", description: "", technologies: "", highlights: "", link: "" })
+      setIsAddDialogOpen(false)
+    }
+  }
+
+  const handleEditProject = (project: Project) => {
+    setEditingProject(project)
+    setNewProject({
+      title: project.title,
+      company: project.company || "",
+      role: project.role,
+      description: project.description,
+      technologies: project.technologies.join(", "),
+      highlights: project.highlights.join("\n"),
+      link: project.link || "",
+    })
+    setIsEditDialogOpen(true)
+  }
+
+  const handleSaveEdit = () => {
+    if (editingProject && newProject.title && newProject.role && newProject.description) {
+      const techArray = newProject.technologies
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t)
+      const highlightsArray = newProject.highlights
+        .split("\n")
+        .map((h) => h.trim())
+        .filter((h) => h)
+
+      setProjects(
+        projects.map((p) =>
+          p.id === editingProject.id
+            ? {
+                ...p,
+                title: newProject.title,
+                company: newProject.company || undefined,
+                role: newProject.role,
+                description: newProject.description,
+                technologies: techArray,
+                highlights: highlightsArray,
+                link: newProject.link || undefined,
+              }
+            : p
+        )
+      )
+      setEditingProject(null)
+      setNewProject({ title: "", company: "", role: "", description: "", technologies: "", highlights: "", link: "" })
+      setIsEditDialogOpen(false)
+    }
+  }
+
+  const handleDeleteProject = (id: string) => {
+    setProjects(projects.filter((p) => p.id !== id))
+  }
 
   return (
     <section id="projects" className="py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-background via-background/95 to-background" ref={ref}>
@@ -153,6 +268,16 @@ export function Projects() {
               <span className="text-primary font-mono text-2xl font-black">3.</span>
               <h2 className="text-5xl sm:text-6xl font-bold tracking-tighter">Featured Projects</h2>
               <div className="hidden md:flex flex-1 h-1 bg-gradient-to-r from-primary via-accent to-transparent rounded-full" />
+              {isEditMode && (
+                <Button
+                  onClick={() => setIsAddDialogOpen(true)}
+                  size="sm"
+                  className="gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Project
+                </Button>
+              )}
             </div>
             <p className="text-muted-foreground text-lg max-w-3xl leading-relaxed">
               A curated collection of projects showcasing expertise in full-stack development, generative AI integration, and scalable enterprise systems. Each project represents real-world solutions with measurable impact.
@@ -210,16 +335,36 @@ export function Projects() {
                       <div className="p-3 rounded-lg bg-primary/15 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
                         <Folder className="h-5 w-5" />
                       </div>
-                      {project.link && (
-                        <a
-                          href={project.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 rounded-lg bg-muted/50 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-primary/10 hover:text-primary"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      )}
+                      <div className="flex gap-1">
+                        {isEditMode && (
+                          <>
+                            <button
+                              onClick={() => handleEditProject(project)}
+                              className="p-2 rounded-lg hover:bg-primary/20 text-primary transition-all opacity-0 group-hover:opacity-100"
+                              title="Edit project"
+                            >
+                              <Edit2 className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProject(project.id)}
+                              className="p-2 rounded-lg hover:bg-red-500/20 hover:text-red-600 text-muted-foreground transition-all opacity-0 group-hover:opacity-100"
+                              title="Delete project"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </>
+                        )}
+                        {project.link && (
+                          <a
+                            href={project.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 rounded-lg bg-muted/50 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-primary/10 hover:text-primary"
+                          >
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        )}
+                      </div>
                     </div>
                     <CardTitle className="text-lg text-balance leading-tight">{project.title}</CardTitle>
                     {project.company && (
@@ -271,6 +416,160 @@ export function Projects() {
           </div>
         </div>
       </div>
+
+      {/* Add Project Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add New Project</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">Project Title</label>
+                <Input
+                  placeholder="e.g., Project Name"
+                  value={newProject.title}
+                  onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Your Role</label>
+                <Input
+                  placeholder="e.g., Developer"
+                  value={newProject.role}
+                  onChange={(e) => setNewProject({ ...newProject, role: e.target.value })}
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Company (optional)</label>
+              <Input
+                placeholder="e.g., Tech Corp"
+                value={newProject.company}
+                onChange={(e) => setNewProject({ ...newProject, company: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Description</label>
+              <Textarea
+                placeholder="Project description..."
+                value={newProject.description}
+                onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                rows={4}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Technologies (comma-separated)</label>
+              <Input
+                placeholder="e.g., React, TypeScript, Node.js"
+                value={newProject.technologies}
+                onChange={(e) => setNewProject({ ...newProject, technologies: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Highlights (one per line)</label>
+              <Textarea
+                placeholder="Enter project highlights. Each line becomes a bullet point."
+                value={newProject.highlights}
+                onChange={(e) => setNewProject({ ...newProject, highlights: e.target.value })}
+                rows={4}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Project Link (optional)</label>
+              <Input
+                placeholder="https://..."
+                value={newProject.link}
+                onChange={(e) => setNewProject({ ...newProject, link: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddProject}>Add Project</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Project Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Project</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">Project Title</label>
+                <Input
+                  placeholder="Project title"
+                  value={newProject.title}
+                  onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Your Role</label>
+                <Input
+                  placeholder="Your role"
+                  value={newProject.role}
+                  onChange={(e) => setNewProject({ ...newProject, role: e.target.value })}
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Company (optional)</label>
+              <Input
+                placeholder="Company name"
+                value={newProject.company}
+                onChange={(e) => setNewProject({ ...newProject, company: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Description</label>
+              <Textarea
+                placeholder="Project description..."
+                value={newProject.description}
+                onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                rows={4}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Technologies (comma-separated)</label>
+              <Input
+                placeholder="e.g., React, TypeScript, Node.js"
+                value={newProject.technologies}
+                onChange={(e) => setNewProject({ ...newProject, technologies: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Highlights (one per line)</label>
+              <Textarea
+                placeholder="Enter project highlights. Each line becomes a bullet point."
+                value={newProject.highlights}
+                onChange={(e) => setNewProject({ ...newProject, highlights: e.target.value })}
+                rows={4}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Project Link (optional)</label>
+              <Input
+                placeholder="https://..."
+                value={newProject.link}
+                onChange={(e) => setNewProject({ ...newProject, link: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }
